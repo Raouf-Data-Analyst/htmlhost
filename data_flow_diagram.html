@@ -1,0 +1,250 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 1000px;
+                 height: 800px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 1000px;
+                 height: 800px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#FF0000", "id": "XXXJYGYLBP", "label": "XXXJYGYLBP", "shape": "dot", "title": ""}, {"color": "#FF0000", "id": "XXXJZMANJY", "label": "XXXJZMANJY", "shape": "dot", "title": ""}, {"color": "#FF0000", "id": "XXXJNVSFXW", "label": "XXXJNVSFXW", "shape": "dot", "title": ""}, {"color": "#FF0000", "id": "XXXJVYPKUA", "label": "XXXJVYPKUA", "shape": "dot", "title": ""}, {"color": "#FF0000", "id": "XXXJVQUYNB", "label": "XXXJVQUYNB", "shape": "dot", "title": ""}, {"color": "#FF0000", "id": "XXXJKTZUJA", "label": "XXXJKTZUJA", "shape": "dot", "title": ""}, {"color": "#FF0000", "id": "XXXJHEBIOV", "label": "XXXJHEBIOV", "shape": "dot", "title": ""}, {"color": "#FF0000", "id": "XXXJDGENJJ", "label": "XXXJDGENJJ", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJSDVDD", "label": "XXXJSDVDD", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJEPYWX", "label": "XXXJEPYWX", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJTNCPH", "label": "XXXJTNCPH", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJSLSPZ", "label": "XXXJSLSPZ", "shape": "dot", "title": ""}, {"color": "#FF0000", "id": "XXXJVOCYGI", "label": "XXXJVOCYGI", "shape": "dot", "title": ""}, {"color": "#FF0000", "id": "XXXJBOJLCT", "label": "XXXJBOJLCT", "shape": "dot", "title": ""}, {"color": "#FF0000", "id": "XXXJTFQHDL", "label": "XXXJTFQHDL", "shape": "dot", "title": ""}, {"color": "#FF0000", "id": "XXXJRKIPAN", "label": "XXXJRKIPAN", "shape": "dot", "title": ""}, {"color": "#FF0000", "id": "XXXJHWPKNB", "label": "XXXJHWPKNB", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJYRHJI", "label": "XXXJYRHJI", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJTXHTT", "label": "XXXJTXHTT", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJSYEFB", "label": "XXXJSYEFB", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJCISGE", "label": "XXXJCISGE", "shape": "dot", "title": ""}, {"color": "#FF0000", "id": "XXXJZAJAOE", "label": "XXXJZAJAOE", "shape": "dot", "title": ""}, {"color": "#FF0000", "id": "XXXJMYWBPH", "label": "XXXJMYWBPH", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJJLVMH", "label": "XXXJJLVMH", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJLBPET", "label": "XXXJLBPET", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJSVOXV", "label": "XXXJSVOXV", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJBIEMQ", "label": "XXXJBIEMQ", "shape": "dot", "title": ""}, {"color": "#FF0000", "id": "XXXJGSACLH", "label": "XXXJGSACLH", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJVNGSW", "label": "XXXJVNGSW", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJNSERL", "label": "XXXJNSERL", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJVAOGO", "label": "XXXJVAOGO", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJIRDTZ", "label": "XXXJIRDTZ", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJWYOXD", "label": "XXXJWYOXD", "shape": "dot", "title": ""}, {"color": "#FF0000", "id": "XXXJHBOCQC", "label": "XXXJHBOCQC", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJOTBSZ", "label": "XXXJOTBSZ", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJFRHOP", "label": "XXXJFRHOP", "shape": "dot", "title": ""}, {"color": "#FF0000", "id": "XXXJZSCVBF", "label": "XXXJZSCVBF", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJFFYZO", "label": "XXXJFFYZO", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJRHGKA", "label": "XXXJRHGKA", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJMBSFG", "label": "XXXJMBSFG", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJUFGMD", "label": "XXXJUFGMD", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJNUDRY", "label": "XXXJNUDRY", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJQGQWS", "label": "XXXJQGQWS", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJUCESC", "label": "XXXJUCESC", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJYUHFC", "label": "XXXJYUHFC", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJDNKTJ", "label": "XXXJDNKTJ", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJNUOQY", "label": "XXXJNUOQY", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJLAGKW", "label": "XXXJLAGKW", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJBKIWN", "label": "XXXJBKIWN", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJRFFMF", "label": "XXXJRFFMF", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJBDSVN", "label": "XXXJBDSVN", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJUIBGC", "label": "XXXJUIBGC", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJIOTUC", "label": "XXXJIOTUC", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJCGFHZ", "label": "XXXJCGFHZ", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJMOFUO", "label": "XXXJMOFUO", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJPAGQX", "label": "XXXJPAGQX", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJDSGCQ", "label": "XXXJDSGCQ", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJOJHHL", "label": "XXXJOJHHL", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJHKGDI", "label": "XXXJHKGDI", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJMMKRC", "label": "XXXJMMKRC", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJPPRKG", "label": "XXXJPPRKG", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJCEQIN", "label": "XXXJCEQIN", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJOABQG", "label": "XXXJOABQG", "shape": "dot", "title": ""}, {"color": "#FF0000", "id": "XXXJALBXWD", "label": "XXXJALBXWD", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJFEGAW", "label": "XXXJFEGAW", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJKJEGZ", "label": "XXXJKJEGZ", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJYFIBY", "label": "XXXJYFIBY", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJQHGLN", "label": "XXXJQHGLN", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJMSPMF", "label": "XXXJMSPMF", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJLHDYP", "label": "XXXJLHDYP", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJTXHWT", "label": "XXXJTXHWT", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJICUMK", "label": "XXXJICUMK", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJAGDAA", "label": "XXXJAGDAA", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJCFMFW", "label": "XXXJCFMFW", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJJIFPH", "label": "XXXJJIFPH", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJIATIW", "label": "XXXJIATIW", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJYXVXW", "label": "XXXJYXVXW", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJPUWOI", "label": "XXXJPUWOI", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJUTEWL", "label": "XXXJUTEWL", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJTSMVS", "label": "XXXJTSMVS", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJZKEID", "label": "XXXJZKEID", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJWERFV", "label": "XXXJWERFV", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJMIISL", "label": "XXXJMIISL", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJPDABF", "label": "XXXJPDABF", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJQRWWW", "label": "XXXJQRWWW", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJWHBCJ", "label": "XXXJWHBCJ", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJMIVOJ", "label": "XXXJMIVOJ", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJEDAPG", "label": "XXXJEDAPG", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJPOCKR", "label": "XXXJPOCKR", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJMXBTL", "label": "XXXJMXBTL", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJIRNJW", "label": "XXXJIRNJW", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJRQRJX", "label": "XXXJRQRJX", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJUWMPJ", "label": "XXXJUWMPJ", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJIRHJJ", "label": "XXXJIRHJJ", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJZPWDY", "label": "XXXJZPWDY", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJKFIJM", "label": "XXXJKFIJM", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJJNFVQ", "label": "XXXJJNFVQ", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJEYGAS", "label": "XXXJEYGAS", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJXQEPX", "label": "XXXJXQEPX", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJKAMYQ", "label": "XXXJKAMYQ", "shape": "dot", "title": ""}, {"color": "#FF0000", "id": "XXXJLUDRXD", "label": "XXXJLUDRXD", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJWFSFU", "label": "XXXJWFSFU", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJENYYS", "label": "XXXJENYYS", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJGSHNU", "label": "XXXJGSHNU", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJTZGFZ", "label": "XXXJTZGFZ", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJLVIAE", "label": "XXXJLVIAE", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJBUZWB", "label": "XXXJBUZWB", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJJIQWJ", "label": "XXXJJIQWJ", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJDKSIH", "label": "XXXJDKSIH", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJYVFWO", "label": "XXXJYVFWO", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJTYFCM", "label": "XXXJTYFCM", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJUTFFV", "label": "XXXJUTFFV", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJMPHWO", "label": "XXXJMPHWO", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJLSJPC", "label": "XXXJLSJPC", "shape": "dot", "title": ""}, {"color": "#00FF00", "id": "XXXJMHQUC", "label": "XXXJMHQUC", "shape": "dot", "title": ""}]);
+                  edges = new vis.DataSet([{"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJYGYLBP", "to": "XXXJVQUYNB"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJYGYLBP", "to": "XXXJKTZUJA"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJYGYLBP", "to": "XXXJHEBIOV"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJYGYLBP", "to": "XXXJDGENJJ"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJYGYLBP", "to": "XXXJSDVDD"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJYGYLBP", "to": "XXXJEPYWX"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJYGYLBP", "to": "XXXJTNCPH"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJYGYLBP", "to": "XXXJSLSPZ"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZMANJY", "to": "XXXJYGYLBP"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZMANJY", "to": "XXXJZSCVBF"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZMANJY", "to": "XXXJFFYZO"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZMANJY", "to": "XXXJZMANJY"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZMANJY", "to": "XXXJRHGKA"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZMANJY", "to": "XXXJMBSFG"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJNVSFXW", "to": "XXXJYGYLBP"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJNVSFXW", "to": "XXXJHBOCQC"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJNVSFXW", "to": "XXXJMYWBPH"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJNVSFXW", "to": "XXXJTFQHDL"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJNVSFXW", "to": "XXXJLSJPC"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJNVSFXW", "to": "XXXJNVSFXW"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJNVSFXW", "to": "XXXJMHQUC"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJVYPKUA", "to": "XXXJYGYLBP"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJVYPKUA", "to": "XXXJHBOCQC"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJVYPKUA", "to": "XXXJTFQHDL"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJVYPKUA", "to": "XXXJMYWBPH"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJVYPKUA", "to": "XXXJUFGMD"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJVYPKUA", "to": "XXXJVYPKUA"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJVYPKUA", "to": "XXXJNUDRY"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJVQUYNB", "to": "XXXJGSACLH"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJVQUYNB", "to": "XXXJJIFPH"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJVQUYNB", "to": "XXXJIATIW"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJVQUYNB", "to": "XXXJYXVXW"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJVQUYNB", "to": "XXXJPUWOI"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJVQUYNB", "to": "XXXJUTEWL"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJKTZUJA", "to": "XXXJGSACLH"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJKTZUJA", "to": "XXXJMSPMF"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJKTZUJA", "to": "XXXJLHDYP"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJKTZUJA", "to": "XXXJTXHWT"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJKTZUJA", "to": "XXXJICUMK"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJKTZUJA", "to": "XXXJAGDAA"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJKTZUJA", "to": "XXXJCFMFW"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHEBIOV", "to": "XXXJGSACLH"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHEBIOV", "to": "XXXJRQRJX"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHEBIOV", "to": "XXXJUWMPJ"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHEBIOV", "to": "XXXJIRHJJ"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHEBIOV", "to": "XXXJZPWDY"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHEBIOV", "to": "XXXJKFIJM"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHEBIOV", "to": "XXXJJNFVQ"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHEBIOV", "to": "XXXJEYGAS"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHEBIOV", "to": "XXXJXQEPX"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHEBIOV", "to": "XXXJKAMYQ"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJDGENJJ", "to": "XXXJGSACLH"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJDGENJJ", "to": "XXXJDNKTJ"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJDGENJJ", "to": "XXXJNUOQY"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJDGENJJ", "to": "XXXJLAGKW"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJDGENJJ", "to": "XXXJBKIWN"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJDGENJJ", "to": "XXXJRFFMF"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJDGENJJ", "to": "XXXJBDSVN"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJDGENJJ", "to": "XXXJUIBGC"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJDGENJJ", "to": "XXXJIOTUC"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJDGENJJ", "to": "XXXJCGFHZ"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJDGENJJ", "to": "XXXJMOFUO"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJDGENJJ", "to": "XXXJPAGQX"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJDGENJJ", "to": "XXXJDSGCQ"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJDGENJJ", "to": "XXXJOJHHL"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJDGENJJ", "to": "XXXJHKGDI"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJVOCYGI", "to": "XXXJTFQHDL"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJVOCYGI", "to": "XXXJRKIPAN"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJVOCYGI", "to": "XXXJHWPKNB"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJVOCYGI", "to": "XXXJYRHJI"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJVOCYGI", "to": "XXXJTXHTT"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJVOCYGI", "to": "XXXJSYEFB"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJVOCYGI", "to": "XXXJCISGE"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJBOJLCT", "to": "XXXJVOCYGI"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJBOJLCT", "to": "XXXJWFSFU"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJBOJLCT", "to": "XXXJENYYS"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJBOJLCT", "to": "XXXJGSHNU"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJTFQHDL", "to": "XXXJZMANJY"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJTFQHDL", "to": "XXXJMYWBPH"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJTFQHDL", "to": "XXXJZSCVBF"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJTFQHDL", "to": "XXXJTZGFZ"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJTFQHDL", "to": "XXXJLVIAE"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJTFQHDL", "to": "XXXJBUZWB"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJTFQHDL", "to": "XXXJJIQWJ"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJTFQHDL", "to": "XXXJDKSIH"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJTFQHDL", "to": "XXXJYVFWO"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJRKIPAN", "to": "XXXJMYWBPH"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJRKIPAN", "to": "XXXJIRDTZ"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJRKIPAN", "to": "XXXJRKIPAN"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJRKIPAN", "to": "XXXJWYOXD"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHWPKNB", "to": "XXXJZAJAOE"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHWPKNB", "to": "XXXJMYWBPH"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHWPKNB", "to": "XXXJMMKRC"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHWPKNB", "to": "XXXJHWPKNB"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHWPKNB", "to": "XXXJPPRKG"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHWPKNB", "to": "XXXJCEQIN"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHWPKNB", "to": "XXXJOABQG"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZAJAOE", "to": "XXXJMYWBPH"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZAJAOE", "to": "XXXJJLVMH"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZAJAOE", "to": "XXXJLBPET"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZAJAOE", "to": "XXXJSVOXV"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZAJAOE", "to": "XXXJBIEMQ"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJMYWBPH", "to": "XXXJQGQWS"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJMYWBPH", "to": "XXXJMYWBPH"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJMYWBPH", "to": "XXXJUCESC"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJMYWBPH", "to": "XXXJYUHFC"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJGSACLH", "to": "XXXJMYWBPH"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJGSACLH", "to": "XXXJVNGSW"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJGSACLH", "to": "XXXJNSERL"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJGSACLH", "to": "XXXJVAOGO"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHBOCQC", "to": "XXXJTFQHDL"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHBOCQC", "to": "XXXJMYWBPH"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHBOCQC", "to": "XXXJOTBSZ"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHBOCQC", "to": "XXXJHBOCQC"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJHBOCQC", "to": "XXXJFRHOP"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZSCVBF", "to": "XXXJVYPKUA"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZSCVBF", "to": "XXXJHWPKNB"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZSCVBF", "to": "XXXJALBXWD"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZSCVBF", "to": "XXXJNVSFXW"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZSCVBF", "to": "XXXJTSMVS"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZSCVBF", "to": "XXXJZKEID"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZSCVBF", "to": "XXXJWERFV"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZSCVBF", "to": "XXXJMIISL"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZSCVBF", "to": "XXXJPDABF"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZSCVBF", "to": "XXXJQRWWW"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZSCVBF", "to": "XXXJWHBCJ"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZSCVBF", "to": "XXXJMIVOJ"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZSCVBF", "to": "XXXJEDAPG"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZSCVBF", "to": "XXXJPOCKR"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZSCVBF", "to": "XXXJMXBTL"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJZSCVBF", "to": "XXXJIRNJW"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJALBXWD", "to": "XXXJFEGAW"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJALBXWD", "to": "XXXJKJEGZ"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJALBXWD", "to": "XXXJYFIBY"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJALBXWD", "to": "XXXJQHGLN"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJLUDRXD", "to": "XXXJBOJLCT"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJLUDRXD", "to": "XXXJTYFCM"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJLUDRXD", "to": "XXXJUTFFV"}, {"arrowStrikethrough": false, "arrows": "to", "color": "#000000", "from": "XXXJLUDRXD", "to": "XXXJMPHWO"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
